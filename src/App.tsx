@@ -10,7 +10,6 @@ import {
   Theme,
 } from "@carbon/react";
 import { Notification } from "@carbon/react/icons";
-import ReminderScreen from "./screens/ReminderScreen";
 import ReviewScreen from "./screens/ReviewScreen";
 import ConfirmScreen from "./screens/ConfirmScreen";
 import TimesheetScreen from "./screens/TimesheetScreen";
@@ -20,7 +19,7 @@ import { MOCK_TODAY_ENTRIES, MOCK_WEEKLY_DATA } from "./data/mockData";
 import { calcHours } from "./utils/timeHelpers";
 
 function App() {
-  const [screen, setScreen] = useState<Screen>("reminder");
+  const [screen, setScreen] = useState<Screen>("review");
   const [todayEntries, setTodayEntries] =
     useState<TimeEntry[]>(MOCK_TODAY_ENTRIES);
   const [weeklyData, setWeeklyData] =
@@ -90,7 +89,7 @@ function App() {
           prefix=""
           onClick={(e: React.MouseEvent) => {
             e.preventDefault();
-            setScreen("reminder");
+            setScreen("review");
           }}
         >
           TimeFlow
@@ -98,11 +97,10 @@ function App() {
         <HeaderNavigation aria-label="Main navigation">
           <HeaderMenuItem
             isCurrentPage={
-              screen === "reminder" ||
               screen === "review" ||
               screen === "confirm"
             }
-            onClick={() => setScreen("reminder")}
+            onClick={() => setScreen("review")}
           >
             Today
           </HeaderMenuItem>
@@ -129,9 +127,6 @@ function App() {
         </HeaderGlobalBar>
       </Header>
       <Content>
-        {screen === "reminder" && (
-          <ReminderScreen onReview={() => setScreen("review")} />
-        )}
         {screen === "review" && (
           <ReviewScreen
             entries={todayEntries}

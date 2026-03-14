@@ -30,7 +30,7 @@ export interface TeamMember {
   avgConfirmTime: string;
 }
 
-export type Screen = "reminder" | "review" | "confirm" | "timesheet" | "dashboard";
+export type Screen = "review" | "confirm" | "timesheet" | "dashboard";
 
 // For weekly timesheet grid
 export interface WeeklyProjectRow {

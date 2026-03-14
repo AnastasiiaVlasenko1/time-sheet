@@ -29,7 +29,14 @@ const ProgressRing: React.FC<ProgressRingProps> = ({
   const center = size / 2;
 
   return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+    <svg
+      width={size}
+      height={size}
+      viewBox={`0 0 ${size} ${size}`}
+      role="img"
+      aria-label={`${value} of ${max} hours`}
+    >
+      <title>{`${value} of ${max} hours`}</title>
       {/* Background circle */}
       <circle
         cx={center}

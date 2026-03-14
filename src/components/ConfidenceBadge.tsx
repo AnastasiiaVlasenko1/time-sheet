@@ -12,7 +12,7 @@ const tagMap: Record<
 > = {
   high: { type: "green", label: "High" },
   medium: { type: "warm-gray", label: "Medium" },
-  low: { type: "red", label: "Low" },
+  low: { type: "magenta", label: "Low" },
 };
 
 const ConfidenceBadge: React.FC<ConfidenceBadgeProps> = ({ level }) => {

@@ -6,7 +6,7 @@ interface SourceTagProps {
 }
 
 const labelMap: Record<SourceTagProps["source"], string> = {
-  calendar: "Cal",
+  calendar: "Calendar",
   jira: "Jira",
   pattern: "Pattern",
   manual: "Manual",

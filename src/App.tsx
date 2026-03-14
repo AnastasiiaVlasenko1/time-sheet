@@ -8,6 +8,7 @@ import {
   HeaderGlobalAction,
   Content,
   Theme,
+  InlineNotification,
 } from "@carbon/react";
 import { Notification } from "@carbon/react/icons";
 import ReviewScreen from "./screens/ReviewScreen";
@@ -25,6 +26,7 @@ function App() {
   const [weeklyData, setWeeklyData] =
     useState<WeeklyProjectRow[]>(MOCK_WEEKLY_DATA);
   const [fridayConfirmed, setFridayConfirmed] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
   const handleUpdateEntry = (id: number, updates: Partial<TimeEntry>) => {
     setTodayEntries((prev) =>
@@ -40,7 +42,8 @@ function App() {
     const lastEntry = todayEntries[todayEntries.length - 1];
     const newStart = lastEntry ? lastEntry.end : "17:30";
     const [h, m] = newStart.split(":").map(Number);
-    const newEnd = `${String(h + 1).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+    const newEndHour = Math.min(h + 1, 23);
+    const newEnd = `${String(newEndHour).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
     const newEntry: TimeEntry = {
       id: Date.now(),
       start: newStart,
@@ -78,6 +81,7 @@ function App() {
     );
 
     setFridayConfirmed(true);
+    setSubmitSuccess(true);
     setScreen("timesheet");
   };
 
@@ -141,6 +145,15 @@ function App() {
             entries={todayEntries}
             onSubmit={handleSubmit}
             onBack={() => setScreen("review")}
+          />
+        )}
+        {screen === "timesheet" && submitSuccess && (
+          <InlineNotification
+            kind="success"
+            title="Timesheet submitted"
+            subtitle="Your Friday entries have been saved."
+            onCloseButtonClick={() => setSubmitSuccess(false)}
+            style={{ marginBottom: "1rem" }}
           />
         )}
         {screen === "timesheet" && (

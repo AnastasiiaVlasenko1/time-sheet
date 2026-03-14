@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Dropdown, TextInput } from '@carbon/react';
+import { Button, Dropdown, TextInput, Modal, Tile } from '@carbon/react';
 import { Checkmark, TrashCan, Add } from '@carbon/react/icons';
 import ProjectDot from '../components/ProjectDot';
 import ConfidenceBadge from '../components/ConfidenceBadge';
@@ -25,6 +25,10 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
   onConfirmAll,
 }) => {
   const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  const allConfirmed = entries.length > 0 && entries.every((e) => e.confirmed);
+  const unconfirmedCount = entries.filter((e) => !e.confirmed).length;
 
   return (
     <div style={{ maxWidth: 720, margin: '0 auto' }}>
@@ -35,6 +39,8 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
           justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '1.5rem',
+          flexWrap: 'wrap',
+          gap: '1rem',
         }}
       >
         <div>
@@ -54,6 +60,18 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
         </div>
       </div>
 
+      {/* EMPTY STATE */}
+      {entries.length === 0 && (
+        <Tile style={{ textAlign: 'center', padding: '3rem 1rem' }}>
+          <p style={{ marginBottom: '1rem', color: '#525252' }}>
+            No time entries yet for today.
+          </p>
+          <Button kind="primary" renderIcon={Add} onClick={onAddEntry}>
+            Add your first entry
+          </Button>
+        </Tile>
+      )}
+
       {/* ENTRY LIST */}
       {entries.map((entry) => {
         const isGap = entry.source === 'gap';
@@ -69,9 +87,19 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
         return (
           <div
             key={entry.id}
+            role="button"
+            tabIndex={0}
+            aria-expanded={isExpanded}
+            aria-label={`${entry.project?.name || 'Unassigned'} ${entry.start}–${entry.end}${entry.confirmed ? ', confirmed' : ''}`}
             onClick={() =>
               setExpandedId(isExpanded ? null : entry.id)
             }
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                setExpandedId(isExpanded ? null : entry.id);
+              }
+            }}
             style={{
               cursor: 'pointer',
               padding: '1rem',
@@ -245,7 +273,7 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
                     renderIcon={TrashCan}
                     onClick={(e: React.MouseEvent) => {
                       e.stopPropagation();
-                      onDeleteEntry(entry.id);
+                      setDeleteTargetId(entry.id);
                     }}
                   >
                     Delete
@@ -263,20 +291,46 @@ const ReviewScreen: React.FC<ReviewScreenProps> = ({
           display: 'flex',
           gap: '0.5rem',
           justifyContent: 'space-between',
+          alignItems: 'center',
           marginTop: '1.5rem',
         }}
       >
         <Button kind="ghost" renderIcon={Add} onClick={onAddEntry}>
           Add entry
         </Button>
-        <Button
-          kind="primary"
-          disabled={!entries.every((e) => e.confirmed)}
-          onClick={onConfirmAll}
-        >
-          Confirm all
-        </Button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          {!allConfirmed && entries.length > 0 && (
+            <span style={{ color: '#525252', fontSize: '0.875rem' }}>
+              {unconfirmedCount} {unconfirmedCount === 1 ? 'entry' : 'entries'} still need review
+            </span>
+          )}
+          <Button
+            kind="primary"
+            disabled={!allConfirmed}
+            onClick={onConfirmAll}
+          >
+            Confirm all
+          </Button>
+        </div>
       </div>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      <Modal
+        open={deleteTargetId !== null}
+        danger
+        modalHeading="Delete entry"
+        primaryButtonText="Delete"
+        secondaryButtonText="Cancel"
+        onRequestClose={() => setDeleteTargetId(null)}
+        onRequestSubmit={() => {
+          if (deleteTargetId !== null) {
+            onDeleteEntry(deleteTargetId);
+            setDeleteTargetId(null);
+          }
+        }}
+      >
+        <p>Are you sure you want to delete this time entry? This action cannot be undone.</p>
+      </Modal>
     </div>
   );
 };

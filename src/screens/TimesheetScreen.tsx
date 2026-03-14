@@ -66,7 +66,7 @@ const TimesheetScreen: React.FC<TimesheetScreenProps> = ({
             March 9–13, 2026
           </p>
         </div>
-        <Button kind="ghost" size="sm">
+        <Button kind="ghost" size="sm" disabled title="Coming soon">
           Export CSV
         </Button>
       </div>
@@ -80,6 +80,8 @@ const TimesheetScreen: React.FC<TimesheetScreenProps> = ({
               <TableHeader key={day.key}>
                 {day.label}
                 <span
+                  aria-label={dayStatuses[i] === "confirmed" ? `${day.label} confirmed` : `${day.label} pending`}
+                  title={dayStatuses[i] === "confirmed" ? "Confirmed" : "Pending"}
                   style={{
                     display: "inline-block",
                     width: 8,
@@ -162,7 +164,7 @@ const TimesheetScreen: React.FC<TimesheetScreenProps> = ({
           justifyContent: "space-between",
         }}
       >
-        <Button kind="ghost" onClick={() => onNavigate("reminder")}>
+        <Button kind="ghost" onClick={() => onNavigate("review")}>
           &larr; Back to today
         </Button>
         <Button kind="ghost" onClick={() => onNavigate("dashboard")}>

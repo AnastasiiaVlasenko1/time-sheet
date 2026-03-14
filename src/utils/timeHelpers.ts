@@ -7,7 +7,7 @@ export function calcHours(start: string, end: string): number {
 }
 
 export function totalHours(entries: TimeEntry[]): number {
-  return Number(entries.reduce((sum, e) => sum + calcHours(e.start, e.end), 0).toFixed(1));
+  return Number(entries.filter(e => e.source !== 'gap').reduce((sum, e) => sum + calcHours(e.start, e.end), 0).toFixed(1));
 }
 
 export function billableHours(entries: TimeEntry[]): number {
